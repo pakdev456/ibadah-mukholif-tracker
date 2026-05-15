@@ -41,11 +41,11 @@ export default function Login() {
       onSuccess: () => {
         checkAuth();
       },
-      onError: (error) => {
+      onError: (error: any) => {
         toast({
           variant: "destructive",
           title: "Login failed",
-          description: error.error || "Invalid credentials",
+          description: (error as any).error || "Invalid credentials",
         });
       }
     }
