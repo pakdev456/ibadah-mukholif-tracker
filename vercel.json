@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "pnpm -w run typecheck:libs && pnpm --filter @workspace/babussalam build",
-  "outputDirectory": "artifacts/babussalam/dist",
+  "outputDirectory": "artifacts/babussalam/dist/public",
   "framework": "vite",
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
