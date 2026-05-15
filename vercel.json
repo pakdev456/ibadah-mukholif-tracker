@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "api-backed/index.ts"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "artifacts/babussalam/dist/public/index.html"
+    }
+  ]
+}
