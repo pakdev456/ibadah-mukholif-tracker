@@ -7,7 +7,7 @@
     },
     {
       "source": "/((?!api/).*)",
-      "destination": "artifacts/babussalam/dist/public/index.html"
+      "destination": "artifacts/babussalam/dist"
     }
   ]
 }
