@@ -8,15 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
 const violationSchema = z.object({
   studentName: z.string().min(1, "Nama wajib diisi"),
   kelas: z.string().min(1, "Kelas wajib diisi"),
-  asrama: z.string().min(1, "Asrama wajib diisi"),
-  waktu: z.string().min(1, "Waktu wajib diisi"),
   jenisPelanggaran: z.string().min(1, "Jenis pelanggaran wajib diisi"),
   catatan: z.string().optional(),
 });
@@ -30,8 +28,6 @@ export default function Pendataan() {
     defaultValues: {
       studentName: "",
       kelas: "",
-      asrama: "",
-      waktu: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
       jenisPelanggaran: "",
       catatan: "",
     },
@@ -48,8 +44,6 @@ export default function Pendataan() {
         form.reset({
           studentName: "",
           kelas: "",
-          asrama: "",
-          waktu: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
           jenisPelanggaran: "",
           catatan: "",
         });
@@ -65,7 +59,13 @@ export default function Pendataan() {
   });
 
   const onSubmit = (values: z.infer<typeof violationSchema>) => {
-    createMutation.mutate({ data: values });
+    createMutation.mutate({
+      data: {
+        ...values,
+        asrama: "",
+        waktu: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+      }
+    });
   };
 
   return (
@@ -93,20 +93,6 @@ export default function Pendataan() {
                     </FormItem>
                   )}
                 />
-                
-                <FormField
-                  control={form.control}
-                  name="waktu"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="uppercase text-xs font-mono tracking-widest">Waktu Kejadian</FormLabel>
-                      <FormControl>
-                        <Input type="datetime-local" {...field} className="rounded-none font-mono text-sm border-border bg-transparent focus-visible:ring-1 focus-visible:ring-white h-10" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <FormField
                   control={form.control}
@@ -116,20 +102,6 @@ export default function Pendataan() {
                       <FormLabel className="uppercase text-xs font-mono tracking-widest">Kelas</FormLabel>
                       <FormControl>
                         <Input placeholder="Contoh: X IPA 1" {...field} className="rounded-none font-mono text-sm border-border bg-transparent focus-visible:ring-1 focus-visible:ring-white h-10" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="asrama"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="uppercase text-xs font-mono tracking-widest">Asrama</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Contoh: Asrama A" {...field} className="rounded-none font-mono text-sm border-border bg-transparent focus-visible:ring-1 focus-visible:ring-white h-10" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -158,10 +130,10 @@ export default function Pendataan() {
                   <FormItem>
                     <FormLabel className="uppercase text-xs font-mono tracking-widest">Catatan Tambahan (Opsional)</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Detail kejadian..." 
-                        {...field} 
-                        className="rounded-none font-mono text-sm border-border bg-transparent focus-visible:ring-1 focus-visible:ring-white min-h-[100px]" 
+                      <Textarea
+                        placeholder="Detail kejadian..."
+                        {...field}
+                        className="rounded-none font-mono text-sm border-border bg-transparent focus-visible:ring-1 focus-visible:ring-white min-h-[100px]"
                       />
                     </FormControl>
                     <FormMessage />
@@ -169,8 +141,8 @@ export default function Pendataan() {
                 )}
               />
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full rounded-none h-12 uppercase tracking-widest font-mono text-sm font-bold bg-white text-black hover:bg-gray-200"
                 disabled={createMutation.isPending}
               >

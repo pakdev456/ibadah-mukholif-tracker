@@ -36,7 +36,6 @@ import { Trash2, Filter, X } from "lucide-react";
 export default function DaftarMukholif() {
   const [search, setSearch] = useState("");
   const [selectedKelas, setSelectedKelas] = useState("");
-  const [selectedAsrama, setSelectedAsrama] = useState("");
   const debouncedSearch = useDebounce(search, 400);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -50,14 +49,12 @@ export default function DaftarMukholif() {
     {
       search: debouncedSearch || undefined,
       kelas: selectedKelas || undefined,
-      asrama: selectedAsrama || undefined,
     },
     {
       query: {
         queryKey: getListStudentsQueryKey({
           search: debouncedSearch || undefined,
           kelas: selectedKelas || undefined,
-          asrama: selectedAsrama || undefined,
         }),
       },
     }
@@ -66,11 +63,6 @@ export default function DaftarMukholif() {
   const kelasList = useMemo(() => {
     if (!allStudents) return [];
     return Array.from(new Set(allStudents.map((s) => s.kelas))).sort();
-  }, [allStudents]);
-
-  const asramaList = useMemo(() => {
-    if (!allStudents) return [];
-    return Array.from(new Set(allStudents.map((s) => s.asrama))).sort();
   }, [allStudents]);
 
   const deleteMutation = useDeleteStudent({
@@ -94,11 +86,10 @@ export default function DaftarMukholif() {
     },
   });
 
-  const hasFilters = selectedKelas || selectedAsrama;
+  const hasFilters = !!selectedKelas;
 
   const clearFilters = () => {
     setSelectedKelas("");
-    setSelectedAsrama("");
     setSearch("");
   };
 
@@ -154,38 +145,6 @@ export default function DaftarMukholif() {
             ))}
           </div>
 
-          {/* Asrama Filter */}
-          {asramaList.length > 0 && (
-            <div className="flex gap-1 flex-wrap">
-              <span className="text-xs font-mono text-muted-foreground self-center px-1">|</span>
-              <button
-                data-testid="filter-asrama-all"
-                onClick={() => setSelectedAsrama("")}
-                className={`px-3 py-1 text-xs font-mono uppercase tracking-widest border transition-colors ${
-                  selectedAsrama === ""
-                    ? "bg-white text-black border-white"
-                    : "border-border text-muted-foreground hover:border-white hover:text-white"
-                }`}
-              >
-                Semua Asrama
-              </button>
-              {asramaList.map((a) => (
-                <button
-                  key={a}
-                  data-testid={`filter-asrama-${a}`}
-                  onClick={() => setSelectedAsrama(a === selectedAsrama ? "" : a)}
-                  className={`px-3 py-1 text-xs font-mono uppercase tracking-widest border transition-colors ${
-                    selectedAsrama === a
-                      ? "bg-white text-black border-white"
-                      : "border-border text-muted-foreground hover:border-white hover:text-white"
-                  }`}
-                >
-                  {a}
-                </button>
-              ))}
-            </div>
-          )}
-
           {hasFilters && (
             <button
               data-testid="button-clear-filters"
@@ -204,7 +163,6 @@ export default function DaftarMukholif() {
         <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
           {students?.length ?? 0} mukholif ditemukan
           {selectedKelas && ` · Kelas ${selectedKelas}`}
-          {selectedAsrama && ` · Asrama ${selectedAsrama}`}
         </p>
       )}
 
@@ -225,9 +183,6 @@ export default function DaftarMukholif() {
                 </TableHead>
                 <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
                   Kelas
-                </TableHead>
-                <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                  Asrama
                 </TableHead>
                 <TableHead className="text-right font-mono text-xs uppercase tracking-widest text-muted-foreground">
                   Total Pelanggaran
@@ -252,7 +207,6 @@ export default function DaftarMukholif() {
                     </Link>
                   </TableCell>
                   <TableCell className="font-mono text-sm">{student.kelas}</TableCell>
-                  <TableCell className="font-mono text-sm">{student.asrama}</TableCell>
                   <TableCell className="text-right font-mono text-sm font-bold">
                     {student.violationCount}
                   </TableCell>
