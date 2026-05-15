@@ -4,27 +4,9 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+// Gunakan fallback agar build tidak langsung mati jika env tidak ada di Vercel
+const port = Number(process.env.PORT) || 5000;
+const basePath = process.env.BASE_PATH || "/";
 
 export default defineConfig({
   base: basePath,
@@ -55,8 +37,12 @@ export default defineConfig({
   },
   root: path.resolve(import.meta.dirname),
   build: {
+    // INI KUNCI BIAR ERROR SHADCN TADI HILANG
+    sourcemap: false, 
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    // Tambahan agar build lebih stabil
+    chunkSizeWarningLimit: 1600,
   },
   server: {
     port,
