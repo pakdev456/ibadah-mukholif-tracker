@@ -6,16 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, username, logout, isLoading } = useAuth();
+  const { isAuthenticated, username, logout } = useAuth();
   const [location] = useLocation();
-
-  if (isLoading) {
-    return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Loading...</div>;
-  }
-
-  if (!isAuthenticated && location !== "/login") {
-    return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Redirecting...</div>;
-  }
 
   if (!isAuthenticated) {
     return <>{children}</>;

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
   }
 });
 
-function ProtectedRoute({ component: Component, path }: { component: any, path: string }) {
+function ProtectedRoute({ component: Component, path }: { component: React.ComponentType, path: string }) {
   const { isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
 
@@ -31,9 +31,11 @@ function ProtectedRoute({ component: Component, path }: { component: any, path: 
     }
   }, [isLoading, isAuthenticated, setLocation]);
 
-  if (isLoading || !isAuthenticated) return null;
-
-  return <Route path={path} component={Component} />;
+  return (
+    <Route path={path}>
+      {isLoading ? null : isAuthenticated ? <Component /> : null}
+    </Route>
+  );
 }
 
 function Router() {
