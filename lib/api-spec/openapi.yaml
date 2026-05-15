@@ -3,13 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Babussalam Mukholif API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: violations
+    description: Mukholif violations
+  - name: students
+    description: Student records
+  - name: dashboard
+    description: Dashboard statistics
 paths:
   /healthz:
     get:
@@ -24,6 +32,312 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthStatus"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthStatus"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /violations:
+    get:
+      operationId: listViolations
+      tags: [violations]
+      summary: List all violations
+      parameters:
+        - name: studentName
+          in: query
+          schema:
+            type: string
+        - name: kelas
+          in: query
+          schema:
+            type: string
+        - name: asrama
+          in: query
+          schema:
+            type: string
+        - name: jenisPelanggaran
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of violations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Violation"
+    post:
+      operationId: createViolation
+      tags: [violations]
+      summary: Create a new violation record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ViolationInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Violation"
+
+  /violations/{id}:
+    get:
+      operationId: getViolation
+      tags: [violations]
+      summary: Get a violation by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Violation detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Violation"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateViolation
+      tags: [violations]
+      summary: Update a violation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ViolationUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Violation"
+    delete:
+      operationId: deleteViolation
+      tags: [violations]
+      summary: Delete a violation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /students:
+    get:
+      operationId: listStudents
+      tags: [students]
+      summary: List students with violation counts
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: kelas
+          in: query
+          schema:
+            type: string
+        - name: asrama
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of students with violation counts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StudentSummary"
+
+  /students/{studentName}/violations:
+    get:
+      operationId: getStudentViolations
+      tags: [students]
+      summary: Get all violations for a student
+      parameters:
+        - name: studentName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Student violations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Violation"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard statistics
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/top-violators:
+    get:
+      operationId: getTopViolators
+      tags: [dashboard]
+      summary: Get top violators
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Top violators list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopViolator"
+
+  /dashboard/violations-by-type:
+    get:
+      operationId: getViolationsByType
+      tags: [dashboard]
+      summary: Get violation counts grouped by type
+      responses:
+        "200":
+          description: Violations by type
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ViolationTypeCount"
+
+  /dashboard/violations-by-class:
+    get:
+      operationId: getViolationsByClass
+      tags: [dashboard]
+      summary: Get violation counts grouped by class
+      responses:
+        "200":
+          description: Violations by class
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ViolationClassCount"
+
+  /dashboard/recent-violations:
+    get:
+      operationId: getRecentViolations
+      tags: [dashboard]
+      summary: Get recent violations
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Recent violations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Violation"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +348,155 @@ components:
       required:
         - status
 
+    LoginInput:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    AuthStatus:
+      type: object
+      required: [authenticated, username]
+      properties:
+        authenticated:
+          type: boolean
+        username:
+          type: string
+
+    SuccessResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: ["string", "null"]
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    Violation:
+      type: object
+      required: [id, studentName, kelas, asrama, waktu, jenisPelanggaran, createdAt]
+      properties:
+        id:
+          type: integer
+        studentName:
+          type: string
+        kelas:
+          type: string
+        asrama:
+          type: string
+        waktu:
+          type: string
+        jenisPelanggaran:
+          type: string
+        catatan:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ViolationInput:
+      type: object
+      required: [studentName, kelas, asrama, waktu, jenisPelanggaran]
+      properties:
+        studentName:
+          type: string
+        kelas:
+          type: string
+        asrama:
+          type: string
+        waktu:
+          type: string
+        jenisPelanggaran:
+          type: string
+        catatan:
+          type: string
+
+    ViolationUpdate:
+      type: object
+      properties:
+        studentName:
+          type: string
+        kelas:
+          type: string
+        asrama:
+          type: string
+        waktu:
+          type: string
+        jenisPelanggaran:
+          type: string
+        catatan:
+          type: string
+
+    StudentSummary:
+      type: object
+      required: [studentName, kelas, asrama, violationCount]
+      properties:
+        studentName:
+          type: string
+        kelas:
+          type: string
+        asrama:
+          type: string
+        violationCount:
+          type: integer
+        lastViolation:
+          type: ["string", "null"]
+
+    DashboardStats:
+      type: object
+      required: [totalViolations, totalMukholif, totalKelas, totalAsrama]
+      properties:
+        totalViolations:
+          type: integer
+        totalMukholif:
+          type: integer
+        totalKelas:
+          type: integer
+        totalAsrama:
+          type: integer
+        violationsToday:
+          type: integer
+        violationsThisWeek:
+          type: integer
+        violationsThisMonth:
+          type: integer
+
+    TopViolator:
+      type: object
+      required: [studentName, kelas, asrama, violationCount]
+      properties:
+        studentName:
+          type: string
+        kelas:
+          type: string
+        asrama:
+          type: string
+        violationCount:
+          type: integer
+
+    ViolationTypeCount:
+      type: object
+      required: [jenisPelanggaran, count]
+      properties:
+        jenisPelanggaran:
+          type: string
+        count:
+          type: integer
+
+    ViolationClassCount:
+      type: object
+      required: [kelas, count]
+      properties:
+        kelas:
+          type: string
+        count:
+          type: integer

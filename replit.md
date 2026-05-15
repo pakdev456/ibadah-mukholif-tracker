@@ -1,20 +1,22 @@
-# [Project name]
+# Babussalam - Sistem Pendataan Mukholif Divisi Ibadah
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Website pendataan pelanggar (mukholif) untuk Divisi Ibadah Organisasi Santri Babussalam.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
+- `pnpm --filter @workspace/babussalam run dev` — run the frontend (port 24098)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `DATABASE_URL` — Postgres connection string, `SESSION_SECRET` — session secret
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
+- Frontend: React + Vite + Tailwind CSS + shadcn/ui
+- API: Express 5 + express-session
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
@@ -22,23 +24,38 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — OpenAPI spec (source of truth)
+- `lib/db/src/schema/violations.ts` — violations table schema
+- `artifacts/api-server/src/routes/` — API route handlers (auth, violations, students, dashboard)
+- `artifacts/babussalam/src/` — React frontend
+- `artifacts/babussalam/src/contexts/AuthContext.tsx` — auth state management
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Session-based auth (express-session) with hardcoded credentials: username `jali`, password `ibadah2026`
+- All data stored in PostgreSQL — synced across all browsers automatically
+- OpenAPI-first: spec drives both server Zod validators and React Query client hooks
+- Frontend uses generated hooks from `@workspace/api-client-react`, never raw fetch
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Login**: Secure login page (username: jali, password: ibadah2026)
+- **Dashboard**: Stats (total mukholif, total pelanggaran, harian, bulanan), top violators, recent violations, breakdown by type and class
+- **Pendataan**: Form to record new violations (nama, kelas, asrama, waktu, jenis pelanggaran, catatan) with auto-count per student
+- **Daftar Mukholif**: Searchable/filterable table of students by name, kelas, asrama
+- **Detail Mukholif**: Per-student violation history with edit/delete per row
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Theme: strict black and white (dark mode, monochromatic)
+- Language: Indonesian UI labels
+- Login: username `jali`, password `ibadah2026`
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Always restart the API server after code changes (it builds with esbuild)
+- Run `pnpm run typecheck:libs` after changing `lib/db/src/schema/`
+- Session cookies require `credentials: include` on fetch — handled via Orval custom-fetch config
 
 ## Pointers
 

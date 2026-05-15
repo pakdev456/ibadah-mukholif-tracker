@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Babussalam - Pendataan Mukholif"
+version = "1.0.0"
+id = "artifacts/babussalam"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24098
+
+[services.development]
+run = "pnpm --filter @workspace/babussalam run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/babussalam", "run", "build" ]
+publicDir = "artifacts/babussalam/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24098"
+BASE_PATH = "/"
