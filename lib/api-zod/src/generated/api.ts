@@ -165,6 +165,19 @@ export const ListStudentsResponse = zod.array(ListStudentsResponseItem)
 
 
 /**
+ * @summary Delete all violations for a student
+ */
+export const DeleteStudentParams = zod.object({
+  "studentName": zod.coerce.string()
+})
+
+export const DeleteStudentResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().nullish()
+})
+
+
+/**
  * @summary Get all violations for a student
  */
 export const GetStudentViolationsParams = zod.object({

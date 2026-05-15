@@ -38,6 +38,19 @@ router.get("/students", async (req, res) => {
   }
 });
 
+router.delete("/students/:studentName", async (req, res) => {
+  try {
+    const { studentName } = req.params;
+    await db
+      .delete(violationsTable)
+      .where(eq(violationsTable.studentName, decodeURIComponent(studentName)));
+    res.json({ success: true, message: "Semua pelanggaran mukholif telah dihapus" });
+  } catch (err) {
+    req.log.error({ err }, "Failed to delete student");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/students/:studentName/violations", async (req, res) => {
   try {
     const { studentName } = req.params;

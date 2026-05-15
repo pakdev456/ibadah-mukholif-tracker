@@ -232,6 +232,25 @@ paths:
                 items:
                   $ref: "#/components/schemas/StudentSummary"
 
+  /students/{studentName}:
+    delete:
+      operationId: deleteStudent
+      tags: [students]
+      summary: Delete all violations for a student
+      parameters:
+        - name: studentName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
   /students/{studentName}/violations:
     get:
       operationId: getStudentViolations
