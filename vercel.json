@@ -1,5 +1,18 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "artifacts/babussalam/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/public"
+      }
+    },
+    {
+      "src": "api-backed/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -7,7 +20,7 @@
     },
     {
       "source": "/((?!api/).*)",
-      "destination": "artifacts/babussalam/dist"
+      "destination": "artifacts/babussalam/dist/public/index.html"
     }
   ]
 }
