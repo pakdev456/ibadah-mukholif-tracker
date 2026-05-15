@@ -2,5 +2,8 @@
   "version": 2,
   "buildCommand": "pnpm -w run typecheck:libs && pnpm --filter @workspace/babussalam build",
   "outputDirectory": "artifacts/babussalam/dist",
-  "framework": "vite"
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
 }
